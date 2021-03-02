@@ -6,6 +6,9 @@ const mongoose = require("mongoose");
 const path = require("path");
 
 const authRouter = require("./routes/auth-route");
+const passport = require("passport");
+
+require("./passport");
 
 dotenv.config();
 
@@ -24,7 +27,6 @@ app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   cors({
@@ -32,6 +34,6 @@ app.use(
     credentials: true,
   })
 );
+app.use(passport.initialize());
 
 app.use("/auth", authRouter);
-

@@ -1,6 +1,8 @@
 const { body, check } = require("express-validator");
 
 exports.generateValidator = [
+  check("firstName").notEmpty().escape(),
+  check("lastName").notEmpty().escape(),
   check("email").normalizeEmail().isEmail(),
   body(
     "password",
