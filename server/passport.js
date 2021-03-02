@@ -16,7 +16,9 @@ passport.use(
         console.log("accessToken", accessToken);
         console.log("refreshToken", refreshToken);
 
-        const existingUser = await User.findOne({ facebookId: profile.id });
+        const existingUser = await User.findOne({
+          email: profile.emails[0].value,
+        });
         if (existingUser) {
           return done(null, existingUser);
         }
@@ -25,6 +27,7 @@ passport.use(
           facebookId: profile.id,
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
+          email: profile.emails[0].value,
         });
 
         await newUser.save();
@@ -35,3 +38,13 @@ passport.use(
     }
   )
 );
+
+passport.serializeUser(function (user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function (user, cb) {
+  cb(null, user);
+});
+
+module.exports = passport;
