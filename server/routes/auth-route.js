@@ -133,7 +133,7 @@ router.get("/loggedin", (req, res) => {
     if (!token) return res.json(false);
     jwt.verify(token, process.env.JWT_SECRET);
 
-    res.send(true);
+    res.json(true);
   } catch (err) {
     res.json(false);
   }
