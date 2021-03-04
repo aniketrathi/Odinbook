@@ -7,12 +7,16 @@ import {
   NavLink,
   NavItem,
 } from "reactstrap";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import AuthContext from "../context/auth-context";
+import Logout from "./auth/logout";
 
 const Header = (props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
+
+  const { loggedIn } = useContext(AuthContext);
 
   return (
     <div>
@@ -23,12 +27,23 @@ const Header = (props) => {
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ml-auto" navbar>
-            <NavItem>
-              <NavLink href="/register">Signup</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/login">Login</NavLink>
-            </NavItem>
+            {loggedIn === false && (
+              <>
+                <NavItem>
+                  <NavLink href="/auth">Signup</NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/auth/login">Login</NavLink>
+                </NavItem>
+              </>
+            )}
+            {loggedIn === true && (
+              <>
+                <NavItem>
+                  <Logout />
+                </NavItem>
+              </>
+            )}
           </Nav>
         </Collapse>
       </Navbar>
