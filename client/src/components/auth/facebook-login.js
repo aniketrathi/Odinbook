@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import AuthContext from "../../context/auth-context";
-// import { Button } from "reactstrap";
+import { Button } from "reactstrap";
 import Facebook from "react-facebook-login/dist/facebook-login-render-props";
 function FacebookLogin() {
   const { getLoggedIn } = useContext(AuthContext);
@@ -27,17 +27,18 @@ function FacebookLogin() {
     <Facebook
       appId="1121590768282051"
       render={(renderProps) => (
-        <button
+        <Button
           style={{ marginRight: 15 }}
-          className="btn btn-primary"
+          outline
+          color="info"
+          block
           onClick={renderProps.onClick}
         >
-          Facebook
-        </button>
+          Login with Facebook
+        </Button>
       )}
       fields="name,email,givenName,familyName"
       callback={responseFacebook}
-      cssClass="btn btn-outline-primary"
     />
   );
 }
