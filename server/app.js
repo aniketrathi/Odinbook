@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 
 const authRouter = require("./routes/auth-route");
+const userRouter = require("./routes/user-route");
 const passport = require("passport");
 
 require("./passport");
@@ -13,7 +14,6 @@ require("./passport");
 dotenv.config();
 
 // set up server
-
 const app = express();
 
 const mongoDB = process.env.DEV_DB_URL;
@@ -37,3 +37,4 @@ app.use(
 app.use(passport.initialize());
 
 app.use("/auth", authRouter);
+app.use("/", userRouter);

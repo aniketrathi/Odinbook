@@ -31,10 +31,11 @@ router.post("/", auth_validator.generateValidator, async (req, res) => {
     const passwordHash = await bcrypt.hash(password, salt);
 
     const user = new User({
-      email,
-      passwordHash,
-      firstName,
-      lastName,
+      email: email,
+      passwordHash: passwordHash,
+      firstName: firstName,
+      lastName: lastName,
+      friends: [],
     });
     const savedUser = await user.save();
 
