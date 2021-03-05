@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 const check = require("../middlewares/auth-middleware").auth;
 const User = require("../models/user");
 const Post = require("../models/post");
+const FriendRequest = require("../models/friend-request");
 
 const router = express.Router();
 
@@ -78,7 +79,7 @@ router.put("/users/:userid", check, async (req, res) => {
 });
 
 router.get("/users/:userid/posts", check, async (req, res) => {
-    const {userid} = req.params;
+  const { userid } = req.params;
   try {
     Post.find({ author: userid })
       .sort({ timestamp: -1 })
@@ -91,6 +92,100 @@ router.get("/users/:userid/posts", check, async (req, res) => {
         }
         return res.json(posts);
       });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+// To show all requests //
+router.get("/users/:userid/friendrequests", check, async (req, res) => {
+  const { userid } = req.params;
+  try {
+    FriendRequest.find({ receiver: userid })
+      .lean()
+      .populate("sender")
+      .populate("receiver")
+      .then((results) => {
+        if (results.length === 0) {
+          return res.status(404).json({
+            message: "No requests found",
+          });
+        }
+        return res.json(results);
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+// To accept the friend request //
+router.put("/users/:userid/friend", check, async (req, res) => {
+  try {
+    if (!req.body._id) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["User id was not sent on request body"],
+      });
+    }
+
+    const userToAdd = await User.findById(req.body._id);
+
+    if (!userToAdd) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["ID sent on request body returns no user"],
+      });
+    }
+
+    const userRequested = await User.findById(req.params.userid);
+
+    if (userRequested.friends.indexOf(req.body._id) !== -1) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["User already has the requester ID on friend array."],
+      });
+    }
+
+    userRequested.friends.push(req.body._id);
+
+    const saveResult = userRequested.save();
+    return res.json(saveResult);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+router.put("/users/:userid/unfriend", check, async (req, res) => {
+  try {
+    if (!req.body._id) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["User id was not sent on request body"],
+      });
+    }
+
+    const user = await User.findById(req.params.userid);
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["User does not exist."],
+      });
+    }
+
+    user.friends = [...user.friends].filter(
+      (friend) => friend.toString() !== req.body._id
+    );
+
+    const updateResult = await User.updateOne(
+      { _id: req.params.userid },
+      { friends: user.friends }
+    );
+
+    return res.json(updateResult);
   } catch (err) {
     console.error(err);
     res.status(500).send();
