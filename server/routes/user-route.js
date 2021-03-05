@@ -192,4 +192,34 @@ router.put("/users/:userid/unfriend", check, async (req, res) => {
   }
 });
 
+router.get("/users/search/:pattern", check, (req, res) => {
+  const { pattern } = req.params;
+  try {
+    let query = pattern.split(" ");
+    // let query = pattern.split("+");
+
+    if (query.length === 1) {
+      query = [pattern, pattern];
+    }
+
+    User.find({
+      $or: [
+        { firstName: { $regex: query[0], $options: "i" } },
+        { lastName: { $regex: query[1], $options: "i" } },
+      ],
+    }).then((matches) => {
+      if (matches.length === 0) {
+        return res.status(404).json({
+          message: "No matches found",
+        });
+      }
+
+      return res.json(matches);
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
 module.exports = router;
