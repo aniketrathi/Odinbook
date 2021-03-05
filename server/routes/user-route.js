@@ -3,6 +3,7 @@ const { validationResult } = require("express-validator");
 
 const check = require("../middlewares/auth-middleware").auth;
 const User = require("../models/user");
+const Post = require("../models/post");
 
 const router = express.Router();
 
@@ -75,4 +76,25 @@ router.put("/users/:userid", check, async (req, res) => {
     res.status(500).send();
   }
 });
+
+router.get("/users/:userid/posts", check, async (req, res) => {
+    const {userid} = req.params;
+  try {
+    Post.find({ author: userid })
+      .sort({ timestamp: -1 })
+      .populate("author")
+      .then((posts) => {
+        if (posts.length === 0) {
+          return res.status(404).json({
+            message: "No posts found.",
+          });
+        }
+        return res.json(posts);
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
 module.exports = router;
