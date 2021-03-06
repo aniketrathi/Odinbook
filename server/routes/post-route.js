@@ -1,4 +1,5 @@
 const express = require("express");
+const { validationResult } = require("express-validator");
 
 const check = require("../middlewares/auth-middleware").auth;
 const User = require("../models/user");
@@ -41,6 +42,32 @@ router.get("/posts/:postid", check, (req, res) => {
 
         return res.json(post);
       });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+router.post("/posts", check, async (req, res) => {
+  const { content, timestamp } = req.body;
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: errors.array(),
+      });
+    }
+
+    const newPost = await new Post({
+      content: content,
+      author: req.user,
+      timestamp: timestamp,
+      likes: [],
+    });
+
+    const postResult = await newPost.save();
+    return res.json(postResult);
   } catch (err) {
     console.error(err);
     res.status(500).send();

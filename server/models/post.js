@@ -22,9 +22,6 @@ const postSchema = new Schema({
     type: Date,
     required: true,
   },
-  photo: {
-    type: String,
-  },
 });
 
 //Export model
