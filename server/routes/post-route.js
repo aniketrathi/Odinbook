@@ -4,6 +4,8 @@ const { validationResult } = require("express-validator");
 const check = require("../middlewares/auth-middleware").auth;
 const User = require("../models/user");
 const Post = require("../models/post");
+const postValidator = require("../validators/post-validator").generateValidator;
+const updatePostValidator = require("../validators/post-validator").generateValidatorUpdate;
 
 const router = express.Router();
 
@@ -48,7 +50,7 @@ router.get("/posts/:postid", check, (req, res) => {
   }
 });
 
-router.post("/posts", check, async (req, res) => {
+router.post("/posts", check, postValidator, async (req, res) => {
   const { content, timestamp } = req.body;
   try {
     const errors = validationResult(req);
@@ -73,3 +75,5 @@ router.post("/posts", check, async (req, res) => {
     res.status(500).send();
   }
 });
+
+router.put("/posts/:postid", check)

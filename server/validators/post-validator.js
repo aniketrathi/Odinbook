@@ -9,3 +9,12 @@ exports.generateValidator = [
     .escape(),
   body("timestamp").not().isEmpty().withMessage("Missing timestamp").escape(),
 ];
+
+exports.generateValidatorUpdate = [
+  body("content")
+    .not()
+    .isEmpty()
+    .withMessage("Must provide some content")
+    .trim()
+    .escape(),
+];
