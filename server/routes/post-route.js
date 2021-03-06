@@ -33,7 +33,7 @@ router.get("/posts", check, (req, res) => {
 router.get("/posts/:postid", check, (req, res) => {
   const { postid } = req.params;
   try {
-    Post.findById(req.params.postid)
+    Post.findById(postid)
       .lean()
       .populate("author")
       .then((post) => {
@@ -104,16 +104,105 @@ router.put("/posts/:postid", check, updatePostValidator, async (req, res) => {
   }
 });
 
-router.delete("/posts/:postid", check, (req, res) => {
+router.delete("/posts/:postid", check, async (req, res) => {
   const { postid } = req.params;
   try {
     const deleteResult = await Post.deleteOne({ _id: postid });
-  
+
     if (deleteResult.deletedCount === 1) {
-      return res.json({ _id:postid });
-    } 
+      return res.json({ _id: postid });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).send();
   }
 });
+
+router.put("/posts/:postid/like", check, (req, res) => {
+  const { postid } = req.params;
+  const { _id } = req.body;
+  try {
+    if (!_id) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["Missing user ID."],
+      });
+    }
+
+    Post.findById(postid).then((post) => {
+      if (!post) {
+        return res.status(404).json({
+          message: "Post not found.",
+        });
+      }
+
+      const likes = [...post.likes];
+      const foundUser = likes.find((user) => user.toString() === _id);
+
+      if (foundUser !== undefined) {
+        return res.status(403).json({
+          message: "Forbidden",
+          details: ["User has already liked the post."],
+        });
+      }
+
+      likes.push(_id);
+
+      Post.updateOne({ _id: postid }, { likes })
+        .then((result) => {
+          return res.json(result);
+        })
+        .catch((err) => {
+          throw err;
+        });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+router.put("/posts/:postid/dislike", check, (req, res) => {
+  const { postid } = req.params;
+  const { _id } = req.body;
+  try {
+    if (!_id) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["Missing user ID."],
+      });
+    }
+
+    Post.findById(postid).then((post) => {
+      if (!post) {
+        return res.status(404).json({
+          message: "Post not found.",
+        });
+      }
+
+      if (post.likes.indexOf(_id) === -1) {
+        return res.status(403).json({
+          message: "Forbidden",
+          details: ["User has not liked the post before."],
+        });
+      }
+
+      const likes = [...post.likes].filter(
+        (user) => user._id.toString() !== _id
+      );
+
+      Post.updateOne({ _id: postid }, { likes })
+        .then((result) => {
+          return res.json(result);
+        })
+        .catch((err) => {
+          throw err;
+        });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+module.exports = router;

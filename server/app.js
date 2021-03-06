@@ -4,11 +4,12 @@ const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const passport = require("passport");
 
 const authRouter = require("./routes/auth-route");
 const userRouter = require("./routes/user-route");
 const friendRequestRouter = require("./routes/friend-request-route");
-const passport = require("passport");
+const postRouter = require("./routes/post-route");
 
 require("./passport");
 
@@ -40,3 +41,4 @@ app.use(passport.initialize());
 app.use("/auth", authRouter);
 app.use("/", userRouter);
 app.use("/", friendRequestRouter);
+app.use("/", postRouter);
