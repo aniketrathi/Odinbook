@@ -57,7 +57,7 @@ router.post(
       }
 
       const newComment = new Comment({
-        content: req.body.content,
+        content: content,
         author: req.user,
         post: postid,
       });
@@ -70,5 +70,32 @@ router.post(
     }
   }
 );
+
+router.put("/posts/:postid/comments/:commentid", check, (req, res) => {
+  const { commentid } = req.params;
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: errors.array(),
+      });
+    }
+
+    const updatedData = { ...req.body };
+
+    Comment.updateOne({ _id: commentid }, updatedData).then((updateResult) => {
+      if (updateResult.nModified !== 1) {
+        throw new Error("Update result did not return nModified as 1");
+      }
+
+      return res.json({ ...updatedData, _id: commentid });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
 
 module.exports = router;
