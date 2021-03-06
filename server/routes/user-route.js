@@ -121,15 +121,17 @@ router.get("/users/:userid/friendrequests", check, async (req, res) => {
 
 // To accept the friend request //
 router.put("/users/:userid/friend", check, async (req, res) => {
+  const { _id } = req.body;
+  const { userid } = req.params;
   try {
-    if (!req.body._id) {
+    if (!_id) {
       return res.status(400).json({
         message: "Bad request.",
         details: ["User id was not sent on request body"],
       });
     }
 
-    const userToAdd = await User.findById(req.body._id);
+    const userToAdd = await User.findById(_id);
 
     if (!userToAdd) {
       return res.status(400).json({
@@ -138,18 +140,20 @@ router.put("/users/:userid/friend", check, async (req, res) => {
       });
     }
 
-    const userRequested = await User.findById(req.params.userid);
+    const userRequested = await User.findById(userid);
 
-    if (userRequested.friends.indexOf(req.body._id) !== -1) {
+    if (userRequested.friends.indexOf(_id) !== -1) {
       return res.status(400).json({
         message: "Bad request.",
         details: ["User already has the requester ID on friend array."],
       });
     }
 
-    userRequested.friends.push(req.body._id);
+    userRequested.friends.push(_id);
+    // userToAdd.friends.push(userid);
 
     const saveResult = userRequested.save();
+    // userToAdd.save();
     return res.json(saveResult);
   } catch (err) {
     console.error(err);
@@ -158,15 +162,17 @@ router.put("/users/:userid/friend", check, async (req, res) => {
 });
 
 router.put("/users/:userid/unfriend", check, async (req, res) => {
+  const { _id } = req.body;
+  const { userid } = req.params;
   try {
-    if (!req.body._id) {
+    if (!_id) {
       return res.status(400).json({
         message: "Bad request.",
         details: ["User id was not sent on request body"],
       });
     }
 
-    const user = await User.findById(req.params.userid);
+    const user = await User.findById(userid);
 
     if (!user) {
       return res.status(400).json({
@@ -176,11 +182,11 @@ router.put("/users/:userid/unfriend", check, async (req, res) => {
     }
 
     user.friends = [...user.friends].filter(
-      (friend) => friend.toString() !== req.body._id
+      (friend) => friend.toString() !== _id
     );
 
     const updateResult = await User.updateOne(
-      { _id: req.params.userid },
+      { _id: userid },
       { friends: user.friends }
     );
 
@@ -194,8 +200,8 @@ router.put("/users/:userid/unfriend", check, async (req, res) => {
 router.get("/users/search/:pattern", check, (req, res) => {
   const { pattern } = req.params;
   try {
-    let query = pattern.split(" ");
-    // let query = pattern.split("+");
+    // let query = pattern.split(" ");
+    let query = pattern.split("+");
 
     if (query.length === 1) {
       query = [pattern, pattern];
