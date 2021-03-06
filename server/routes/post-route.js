@@ -5,7 +5,8 @@ const check = require("../middlewares/auth-middleware").auth;
 const User = require("../models/user");
 const Post = require("../models/post");
 const postValidator = require("../validators/post-validator").generateValidator;
-const updatePostValidator = require("../validators/post-validator").generateValidatorUpdate;
+const updatePostValidator = require("../validators/post-validator")
+  .generateValidatorUpdate;
 
 const router = express.Router();
 
@@ -76,4 +77,43 @@ router.post("/posts", check, postValidator, async (req, res) => {
   }
 });
 
-router.put("/posts/:postid", check)
+router.put("/posts/:postid", check, updatePostValidator, async (req, res) => {
+  const { postid } = req.params;
+  try {
+    const errors = await validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: errors.array(),
+      });
+    }
+
+    const updatedData = { ...req.body };
+
+    Post.updateOne({ _id: postid }, updatedData).then((updateResult) => {
+      if (updateResult.nModified !== 1) {
+        throw new Error("Update result did not return nModified as 1");
+      }
+
+      return res.json({ ...updatedData, _id: postid });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
+
+router.delete("/posts/:postid", check, (req, res) => {
+  const { postid } = req.params;
+  try {
+    const deleteResult = await Post.deleteOne({ _id: postid });
+  
+    if (deleteResult.deletedCount === 1) {
+      return res.json({ _id:postid });
+    } 
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+});
