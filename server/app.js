@@ -10,6 +10,7 @@ const authRouter = require("./routes/auth-route");
 const userRouter = require("./routes/user-route");
 const friendRequestRouter = require("./routes/friend-request-route");
 const postRouter = require("./routes/post-route");
+const commentRouter = require("./routes/comment-route");
 
 require("./passport");
 
@@ -42,3 +43,4 @@ app.use("/auth", authRouter);
 app.use("/", userRouter);
 app.use("/", friendRequestRouter);
 app.use("/", postRouter);
+app.use("/", commentRouter);
