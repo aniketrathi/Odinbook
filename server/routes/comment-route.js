@@ -30,46 +30,38 @@ router.get("/posts/:postid/comments", check, (req, res) => {
   }
 });
 
-router.post(
-  "/posts/:postid/comments",
-  check,
-  commentValidator,
-  async (req, res) => {
-    const { postid } = req.params;
-    const { content } = req.body;
-    try {
-      const errors = await validationResult(req);
-
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Bad request.",
-          details: errors.array(),
-        });
-      }
-
-      const commentPost = await Post.findById(postid);
-
-      if (!commentPost) {
-        return res.status(400).json({
-          message: "Bad request.",
-          details: ["Post ID provided does not return any posts."],
-        });
-      }
-
-      const newComment = new Comment({
-        content: content,
-        author: req.user,
-        post: postid,
+router.post("/posts/:postid/comments", check, async (req, res) => {
+  const { postid } = req.params;
+  const { content } = req.body;
+  try {
+    if (content === "") {
+      return res.status(404).json({
+        message: "Comment must not be empty!",
       });
-
-      const commentResult = await newComment.save();
-      return res.json(commentResult);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send();
     }
+
+    const commentPost = await Post.findById(postid);
+
+    if (!commentPost) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["Post ID provided does not return any posts."],
+      });
+    }
+
+    const newComment = new Comment({
+      content: content,
+      author: req.user,
+      post: postid,
+    });
+
+    const commentResult = await newComment.save();
+    return res.json(commentResult);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
   }
-);
+});
 
 router.put(
   "/posts/:postid/comments/:commentid",
