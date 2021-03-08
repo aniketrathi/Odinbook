@@ -5,6 +5,7 @@ import Register from "./components/auth/signup";
 import Header from "./components/header";
 import Welcome from "./components/welcome";
 import AuthContext from "./context/auth-context";
+import Posts from "./components/posts/Posts";
 
 function Router() {
   const { loggedIn } = useContext(AuthContext);
@@ -15,6 +16,13 @@ function Router() {
         <Route exact path="/">
           <Welcome />
         </Route>
+        {loggedIn === true && (
+          <>
+            <Route exact path="/posts">
+              <Posts />
+            </Route>
+          </>
+        )}
         {loggedIn === false && (
           <>
             <Route exact path="/auth">
