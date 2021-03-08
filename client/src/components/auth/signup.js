@@ -19,11 +19,15 @@ const Register = (props) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [error, setError] = useState("");
+  // const [photo, setPhoto] = useState(null);
   const { getLoggedIn } = useContext(AuthContext);
   const history = useHistory();
 
   async function register(e) {
     e.preventDefault();
+    const photo = document.getElementById("photo").files[0];
+    console.log(photo);
     try {
       const registerData = {
         email,
@@ -31,23 +35,38 @@ const Register = (props) => {
         confirmPassword,
         firstName,
         lastName,
+        photo,
       };
 
       await axios.post("http://localhost:5000/auth/", registerData);
       await getLoggedIn();
       history.push("/");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error.response.data);
+      setError(error.response.data.errorMessage);
     }
   }
 
+  const handleError = (error) => {
+    if (error !== "") {
+      return (
+        <>
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        </>
+      );
+    }
+  };
+
   return (
     <Container>
+      {handleError(error)}
       <Row>
         <h1>Register your account!</h1>
         <br />
         <Col sm="12" md={{ size: 6, offset: 3 }}>
-          <Form onSubmit={register}>
+          <Form onSubmit={register} encType="multipart/form-data">
             <FormGroup>
               <Label for="exampleEmail">Email</Label>
               <Input
@@ -101,6 +120,17 @@ const Register = (props) => {
                 placeholder="Doe"
                 onChange={(e) => setLastName(e.target.value)}
                 value={lastName}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="photo">Profile Picture (optional)</Label>
+              <Input
+                type="file"
+                accept=".png, .jpg, .jpeg"
+                name="photo"
+                id="photo"
+                // onChange={(e) => setPhoto(e.target.files[0])}
+                // value={photo}
               />
             </FormGroup>
             <Button type="submit">Register</Button>

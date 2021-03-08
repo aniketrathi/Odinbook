@@ -21,7 +21,7 @@ const Header = (props) => {
   return (
     <div>
       <Navbar color="light" light expand="md">
-        <NavbarBrand href="#">
+        <NavbarBrand href="">
           <h3>Odinbook</h3>
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />

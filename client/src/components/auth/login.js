@@ -17,6 +17,7 @@ import FacebookLogin from "./facebook-login";
 const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const { getLoggedIn } = useContext(AuthContext);
   const history = useHistory();
@@ -33,16 +34,29 @@ const Login = (props) => {
 
       await getLoggedIn();
       history.push("/");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error.response.data);
+      setError(error.response.data.errorMessage);
     }
   }
 
+  const handleError = (error) => {
+    if (error !== "") {
+      return (
+        <>
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        </>
+      );
+    }
+  };
+
   return (
     <Container>
+      {handleError(error)}
       <Row>
         <h1>Login your Account</h1>
-        <br />
         <Col sm="12" md={{ size: 6, offset: 3 }}>
           <Form onSubmit={login}>
             <FormGroup>
