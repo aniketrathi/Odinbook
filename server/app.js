@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const passport = require("passport");
+const fileUpload = require("express-fileupload");
 
 const authRouter = require("./routes/auth-route");
 const userRouter = require("./routes/user-route");
@@ -38,6 +39,7 @@ app.use(
   })
 );
 app.use(passport.initialize());
+app.use(fileUpload());
 
 app.use("/auth", authRouter);
 app.use("/", userRouter);

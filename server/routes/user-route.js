@@ -4,6 +4,8 @@ const check = require("../middlewares/auth-middleware").auth;
 const User = require("../models/user");
 const Post = require("../models/post");
 const FriendRequest = require("../models/friend-request");
+const userValidatorUpdate = require("../validators/user-validator")
+  .generateValidatorUpdate;
 
 const router = express.Router();
 
@@ -44,7 +46,7 @@ router.get("/users/:userid", check, (req, res) => {
   }
 });
 
-router.put("/users/:userid", check, async (req, res) => {
+router.put("/users/:userid", check, userValidatorUpdate, async (req, res) => {
   const { userid, password } = req.params;
   try {
     let hashedPassword = "";

@@ -2,8 +2,11 @@ const bcrypt = require("bcryptjs");
 const env = require("dotenv");
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const { validationResult } = require("express-validator");
 const passport = require("passport");
+const multer = require("multer");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+const fs = require("fs");
 
 const User = require("../models/user");
 
@@ -11,19 +14,63 @@ env.config();
 
 const router = express.Router();
 
-const auth_validator = require("../validators/user-validator");
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "/images");
+  },
+  filename: function (req, file, cb) {
+    cb(null, uuidv4() + "-" + Date.now() + path.extname(file.originalname));
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
+  if (allowedFileTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 2000000 },
+  fileFilter,
+}).single("photo");
 
 /// SIGNUP ROUTE ///
-router.post("/", auth_validator.generateValidator, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const { email, password, firstName, lastName } = req.body;
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errorMessage: errors.array() });
+    const { email, password, confirmPassword, firstName, lastName } = req.body;
+    // const photo = "";
+    // if (req.file !== undefined) {
+    // const { filename } = req.file;
+    // photo = filename;
+    // }
+    // upload(req, res, function (err) {
+    //   if (err instanceof multer.MulterError) {
+    //     res.status(400).json(err.code);
+    //   } else if (err) {
+    //     res.status(400).json("Generic error");
+    //   }
+    //   const { filename } = req.file;
+    //   photo = filename;
+    // });
+    if (email === "" || firstName === "" || lastName === "") {
+      return res.status(400).json({ errorMessage: "Details Incomplete!" });
     }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ errorMessage: "Username exists!" });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ errorMessage: "Weak Password!" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ errorMessage: "Passwords doesn't match!" });
     }
 
     // Hash password //
@@ -31,11 +78,15 @@ router.post("/", auth_validator.generateValidator, async (req, res) => {
     const passwordHash = await bcrypt.hash(password, salt);
 
     const user = new User({
-      email: email,
-      passwordHash: passwordHash,
-      firstName: firstName,
-      lastName: lastName,
+      email,
+      passwordHash,
+      firstName,
+      lastName,
       friends: [],
+      // photo,
+      // fs.readFileSync(
+      //   path.join(__dirname + "/images/" + filename)
+      // ),
     });
     const savedUser = await user.save();
 
@@ -44,7 +95,10 @@ router.post("/", auth_validator.generateValidator, async (req, res) => {
       {
         user: savedUser._id,
       },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 86400,
+      }
     );
 
     /// send a token in a HTTP-only cookie ///
@@ -81,7 +135,10 @@ router.post("/login", async (req, res) => {
       {
         user: existingUser._id,
       },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 86400,
+      }
     );
 
     /// send a token in a HTTP-only cookie ///
@@ -105,7 +162,10 @@ router.post(
         {
           user: req.user._id,
         },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        {
+          expiresIn: 86400,
+        }
       );
       res
         .cookie("token", token, {
@@ -131,12 +191,14 @@ router.get("/logout", (req, res) => {
 router.get("/loggedin", (req, res) => {
   try {
     const token = req.cookies.token;
-    if (!token) return res.json(false);
-    jwt.verify(token, process.env.JWT_SECRET);
-
-    res.json(true);
+    if (!token) return res.json({status: false, user: NULL});
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({
+      status: true,
+      user: verified.user
+    });
   } catch (err) {
-    res.json(false);
+    res.json({status: false, user: null});
   }
 });
 
