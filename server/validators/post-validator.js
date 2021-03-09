@@ -7,7 +7,6 @@ exports.generateValidator = [
     .withMessage("Must provide some content")
     .trim()
     .escape(),
-  body("timestamp").not().isEmpty().withMessage("Missing timestamp").escape(),
 ];
 
 exports.generateValidatorUpdate = [

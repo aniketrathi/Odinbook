@@ -15,6 +15,7 @@ router.get("/posts", check, (req, res) => {
     Post.find()
       .lean()
       .populate("author")
+      .sort({ createdAt: -1 })
       .then((posts) => {
         if (posts.length === 0) {
           return res.status(404).json({
@@ -51,21 +52,18 @@ router.get("/posts/:postid", check, (req, res) => {
   }
 });
 
-router.post("/posts", check, postValidator, async (req, res) => {
-  const { content, timestamp } = req.body;
+router.post("/posts", check, async (req, res) => {
+  const { content } = req.body;
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        message: "Bad request.",
-        details: errors.array(),
+    if (content === "") {
+      return res.status(404).json({
+        message: "Post must not be empty!",
       });
     }
 
     const newPost = await new Post({
       content: content,
       author: req.user,
-      timestamp: timestamp,
       likes: [],
     });
 
@@ -77,18 +75,15 @@ router.post("/posts", check, postValidator, async (req, res) => {
   }
 });
 
-router.put("/posts/:postid", check, updatePostValidator, async (req, res) => {
+router.put("/posts/:postid", check, async (req, res) => {
   const { postid } = req.params;
+  const { content } = req.body;
   try {
-    const errors = await validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        message: "Bad request.",
-        details: errors.array(),
+    if (content === "") {
+      return res.status(404).json({
+        message: "Post must not be empty!",
       });
     }
-
     const updatedData = { ...req.body };
 
     Post.updateOne({ _id: postid }, updatedData).then((updateResult) => {
