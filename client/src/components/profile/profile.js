@@ -1,29 +1,31 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  Card,
-  CardImg,
-  CardText,
-  CardBody,
-  CardTitle,
-  CardSubtitle,
-  Button,
-  Container,
-  Row,
-  Col,
-} from "reactstrap";
+import { Container, Row } from "reactstrap";
+import ProfileDetail from "./ProfileDetail";
+import PostList from "./PostList";
+import FriendList from "./FriendList";
 
 const Profile = () => {
   const { userid } = useParams();
-
   const [currentUser, setCurrentUser] = useState({});
+  const [userPosts, setUserPosts] = useState([]);
 
   async function getUser() {
     try {
       const userRes = await axios.get(`http://localhost:5000/users/${userid}`);
       setCurrentUser(userRes.data);
-      console.log(userRes.data.friends);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getUserPosts() {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/users/${userid}/posts`
+      );
+      setUserPosts(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -31,45 +33,15 @@ const Profile = () => {
 
   useEffect(() => {
     getUser();
+    getUserPosts();
   }, []);
 
   return (
     <Container>
+      <ProfileDetail user={currentUser} /> <br/> <hr/>
       <Row>
-        <Card>
-          <CardImg
-            top
-            width="30%"
-            height="300vw"
-            src={`${currentUser.photo}`}
-            alt="profile pic"
-          />
-          <CardBody>
-            <CardTitle tag="h5">
-              {currentUser.firstName} {currentUser.lastName}
-            </CardTitle>
-            <CardSubtitle tag="h6" className="mb-2 text-muted">
-              {/* {currentUser.friends.length} Friends */}
-            </CardSubtitle>
-            <Button>Add Friend</Button>
-          </CardBody>
-        </Card>
-        <Col xs="4">
-          <hr />
-          {/* <Card body inverse color="info">
-            <CardTitle tag="h5">Friends</CardTitle>
-            {currentUser.friends.map((friend, i) => {
-              return (
-                <CardText key={i}>
-                  <Link to={`/users/${friend._id}`}>
-                    {friend.firstName} {friend.lastName}
-                  </Link>
-                </CardText>
-              );
-            })}
-          </Card> */}
-        </Col>
-        <Col xs="8"></Col>
+        <FriendList friends={currentUser.friends} />
+        <PostList posts={userPosts} />
       </Row>
     </Container>
   );

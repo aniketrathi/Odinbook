@@ -32,7 +32,7 @@ router.get("/users/:userid", check, (req, res) => {
   try {
     const { userid } = req.params;
     User.findById(userid)
-      .populate("friends")
+      .populate('friends')
       .then((user) => {
         if (!user) {
           res.status(404).json({
