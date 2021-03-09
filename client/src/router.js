@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Login from "./components/auth/login";
 import Register from "./components/auth/signup";
 import Header from "./components/header";
-import Profile from "./components/profile/profile";
+import Profile from "./components/profile/Profile";
 import Welcome from "./components/welcome";
 import AuthContext from "./context/auth-context";
 import Posts from "./components/posts/Posts";
