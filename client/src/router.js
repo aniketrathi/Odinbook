@@ -22,6 +22,9 @@ function Router() {
             <Route exact path="/posts">
               <Posts />
             </Route>
+            <Route path="/users/:userid">
+            <Profile />
+          </Route>
           </>
         )}
         {loggedIn === false && (
@@ -32,13 +35,6 @@ function Router() {
             <Route path="/auth/login">
               <Login />
             </Route>
-          </>
-        )}
-        {loggedIn === true && (
-          <>
-          <Route exact path="/users/:userid">
-            <Profile />
-          </Route>
           </>
         )}
       </Switch>
