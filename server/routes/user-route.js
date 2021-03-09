@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs");
 const express = require("express");
 
 const check = require("../middlewares/auth-middleware").auth;
@@ -47,7 +48,8 @@ router.get("/users/:userid", check, (req, res) => {
 });
 
 router.put("/users/:userid", check, userValidatorUpdate, async (req, res) => {
-  const { userid, password } = req.params;
+  const { userid } = req.params;
+  const { password } = req.body;
   try {
     let hashedPassword = "";
 

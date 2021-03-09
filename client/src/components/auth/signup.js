@@ -20,14 +20,13 @@ const Register = (props) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
-  // const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState("");
   const { getLoggedIn } = useContext(AuthContext);
   const history = useHistory();
 
   async function register(e) {
     e.preventDefault();
-    const photo = document.getElementById("photo").files[0];
-    console.log(photo);
+
     try {
       const registerData = {
         email,
@@ -125,12 +124,12 @@ const Register = (props) => {
             <FormGroup>
               <Label for="photo">Profile Picture (optional)</Label>
               <Input
-                type="file"
-                accept=".png, .jpg, .jpeg"
+                type="text"
                 name="photo"
                 id="photo"
-                // onChange={(e) => setPhoto(e.target.files[0])}
-                // value={photo}
+                placeholder="http://res.cloudinary.com/demo/image/upload/sample.jpg"
+                onChange={(e) => setPhoto(e.target.value)}
+                value={photo}
               />
             </FormGroup>
             <Button type="submit">Register</Button>

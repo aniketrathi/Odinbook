@@ -16,11 +16,11 @@ const Header = (props) => {
 
   const toggle = () => setIsOpen(!isOpen);
 
-  const { loggedIn } = useContext(AuthContext);
+  const { loggedIn, user } = useContext(AuthContext);
 
   return (
     <div>
-      <Navbar color="light" light expand="md">
+      <Navbar color="light" light expand="md" className="mb-3">
         <NavbarBrand href="">
           <h3>Odinbook</h3>
         </NavbarBrand>
@@ -41,6 +41,9 @@ const Header = (props) => {
               <>
                 <NavItem>
                   <Logout />
+                </NavItem>
+                <NavItem>
+                  <NavLink href={`/users/${user}`}>My Profile</NavLink>
                 </NavItem>
               </>
             )}

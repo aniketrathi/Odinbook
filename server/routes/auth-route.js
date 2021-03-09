@@ -3,10 +3,6 @@ const env = require("dotenv");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
-const multer = require("multer");
-const path = require("path");
-const { v4: uuidv4 } = require("uuid");
-const fs = require("fs");
 
 const User = require("../models/user");
 
@@ -14,48 +10,17 @@ env.config();
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "/images");
-  },
-  filename: function (req, file, cb) {
-    cb(null, uuidv4() + "-" + Date.now() + path.extname(file.originalname));
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
-  if (allowedFileTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 2000000 },
-  fileFilter,
-}).single("photo");
-
 /// SIGNUP ROUTE ///
 router.post("/", async (req, res) => {
   try {
-    const { email, password, confirmPassword, firstName, lastName } = req.body;
-    // const photo = "";
-    // if (req.file !== undefined) {
-    // const { filename } = req.file;
-    // photo = filename;
-    // }
-    // upload(req, res, function (err) {
-    //   if (err instanceof multer.MulterError) {
-    //     res.status(400).json(err.code);
-    //   } else if (err) {
-    //     res.status(400).json("Generic error");
-    //   }
-    //   const { filename } = req.file;
-    //   photo = filename;
-    // });
+    var {
+      email,
+      password,
+      confirmPassword,
+      firstName,
+      lastName,
+      photo,
+    } = req.body;
     if (email === "" || firstName === "" || lastName === "") {
       return res.status(400).json({ errorMessage: "Details Incomplete!" });
     }
@@ -72,6 +37,10 @@ router.post("/", async (req, res) => {
     if (password !== confirmPassword) {
       return res.status(400).json({ errorMessage: "Passwords doesn't match!" });
     }
+    
+    if(photo === ""){
+      photo = "https://res.cloudinary.com/aniketrathi/image/upload/v1615195256/r6quzct3qv0sm9mq3pn9.jpg";
+    }
 
     // Hash password //
     const salt = await bcrypt.genSalt();
@@ -83,10 +52,7 @@ router.post("/", async (req, res) => {
       firstName,
       lastName,
       friends: [],
-      // photo,
-      // fs.readFileSync(
-      //   path.join(__dirname + "/images/" + filename)
-      // ),
+      photo,
     });
     const savedUser = await user.save();
 
@@ -191,14 +157,14 @@ router.get("/logout", (req, res) => {
 router.get("/loggedin", (req, res) => {
   try {
     const token = req.cookies.token;
-    if (!token) return res.json({status: false, user: NULL});
+    if (!token) return res.json({ status: false, user: NULL });
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     res.json({
       status: true,
-      user: verified.user
+      user: verified.user,
     });
   } catch (err) {
-    res.json({status: false, user: null});
+    res.json({ status: false, user: null });
   }
 });
 
