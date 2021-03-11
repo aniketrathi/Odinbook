@@ -9,7 +9,7 @@ function Logout() {
   const history = useHistory();
 
   async function logOut() {
-    await axios.get("http://localhost:5000/auth/logout");
+    await axios.get(`${process.env.REACT_APP_API_URL}/auth/logout`);
     await getLoggedIn();
     history.push("/");
   }

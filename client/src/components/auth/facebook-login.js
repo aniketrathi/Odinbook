@@ -12,7 +12,7 @@ function FacebookLogin() {
   const history = useHistory();
 
   async function fbLogin(data) {
-    await axios.post("http://localhost:5000/auth/facebook", {
+    await axios.post(`${process.env.REACT_APP_API_URL}/auth/facebook`, {
       access_token: data,
     });
     console.log(data);

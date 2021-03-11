@@ -11,7 +11,7 @@ const Posts = (props) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/posts")
+      .get(`${process.env.REACT_APP_API_URL}/posts`)
       .then((res) => setPosts(res.data))
       .catch((error) => setError(error.response.data.message));
   }, []);

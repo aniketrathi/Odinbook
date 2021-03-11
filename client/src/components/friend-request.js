@@ -13,7 +13,7 @@ const FriendRequest = (props) => {
   useEffect(() => {
     if (user) {
       axios
-        .get(`http://localhost:5000/users/${user}/friendrequests/`)
+        .get(`${process.env.REACT_APP_API_URL}/users/${user}/friendrequests/`)
         .then((response) => {
           setRequestList(response.data);
         })
@@ -28,14 +28,14 @@ const FriendRequest = (props) => {
     const requestData = {
       _id: senderId,
     };
-    await axios.put(`http://localhost:5000/users/${user}/friend`, requestData);
-    await axios.delete(`http://localhost:5000/friendrequests/${requestId}`);
+    await axios.put(`${process.env.REACT_APP_API_URL}/users/${user}/friend`, requestData);
+    await axios.delete(`${process.env.REACT_APP_API_URL}/friendrequests/${requestId}`);
     window.location.href = `/users/${senderId}/`;
   }
 
   async function deleteRequest(e, senderId, requestId) {
     e.preventDefault();
-    await axios.delete(`http://localhost:5000/friendrequests/${requestId}`);
+    await axios.delete(`${process.env.REACT_APP_API_URL}/friendrequests/${requestId}`);
     window.location.href = `/users/${senderId}/`;
   }
 

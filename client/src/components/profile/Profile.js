@@ -17,7 +17,7 @@ const Profile = () => {
   async function getUser() {
     try {
       setLoading(true);
-      const userRes = await axios.get(`http://localhost:5000/users/${userid}`);
+      const userRes = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userid}`);
       setCurrentUser(userRes.data);
     } catch (error) {
       console.log(error);
@@ -29,7 +29,7 @@ const Profile = () => {
   async function getUserPosts() {
     try {
       const res = await axios.get(
-        `http://localhost:5000/users/${userid}/posts`
+        `${process.env.REACT_APP_API_URL}/users/${userid}/posts`
       );
       setUserPosts(res.data);
     } catch (error) {

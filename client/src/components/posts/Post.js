@@ -29,7 +29,7 @@ const Post = ({ post }) => {
   const { user } = useContext(AuthContext);
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/posts/${post._id}/comments`)
+      .get(`${process.env.REACT_APP_API_URL}/posts/${post._id}/comments`)
       .then((res) => setComments(res.data))
       .catch((err) => console.log(err));
   }, []);

@@ -11,7 +11,7 @@ const SearchResults = (props) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/users/search/${query}`)
+      .get(`${process.env.REACT_APP_API_URL}/users/search/${query}`)
       .then((response) => {
         setResults(response.data);
         console.log(results);

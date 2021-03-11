@@ -38,7 +38,7 @@ const Register = (props) => {
         photo,
       };
 
-      await axios.post("http://localhost:5000/auth/", registerData);
+      await axios.post(`${process.env.REACT_APP_API_URL}/auth/`, registerData);
       await getLoggedIn();
       history.push("/");
     } catch (error) {

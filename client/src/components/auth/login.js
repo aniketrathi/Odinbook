@@ -31,7 +31,7 @@ const Login = (props) => {
         password,
       };
 
-      await axios.post("http://localhost:5000/auth/login", loginData);
+      await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, loginData);
 
       await getLoggedIn();
       history.push("/");

@@ -18,7 +18,7 @@ const CreatePost = (props) => {
         author: user,
       };
 
-      await axios.post("http://localhost:5000/posts/", postdata);
+      await axios.post(`${process.env.REACT_APP_API_URL}/posts/`, postdata);
       window.location.href = "/posts";
     } catch (error) {
       console.error(error.response.data);
