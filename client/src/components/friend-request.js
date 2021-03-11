@@ -30,15 +30,13 @@ const FriendRequest = (props) => {
     };
     await axios.put(`http://localhost:5000/users/${user}/friend`, requestData);
     await axios.delete(`http://localhost:5000/friendrequests/${requestId}`);
-    // window.location.href = `/users/${senderId}/`;
-    window.location.href = "/";
+    window.location.href = `/users/${senderId}/`;
   }
 
   async function deleteRequest(e, senderId, requestId) {
     e.preventDefault();
     await axios.delete(`http://localhost:5000/friendrequests/${requestId}`);
-    // window.location.href = `/users/${senderId}/`;
-    window.location.href = "/";
+    window.location.href = `/users/${senderId}/`;
   }
 
   const handleError = (error) => {
@@ -59,10 +57,22 @@ const FriendRequest = (props) => {
       <div>
         {requestList.map((request, i) => {
           return (
-            <Row key={i}>
+            <Row
+              key={i}
+              style={{
+                backgroundColor: "#F7CAC9",
+                borderRadius: "20px",
+                padding: "5px",
+              }}
+            >
               <Col>
                 <Link to={`/users/${request.sender._id}/`}>
-                  {request.sender.firstName} {request.sender.lastName}
+                  <h4>
+                    <strong>
+                      {" "}
+                      {request.sender.firstName} {request.sender.lastName}
+                    </strong>
+                  </h4>
                 </Link>
               </Col>
               <Col>
