@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardBody,
@@ -11,13 +12,20 @@ import {
   Button,
   FormGroup,
   Input,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "reactstrap";
+
 import AuthContext from "../../context/auth-context";
 
 const Post = ({ post }) => {
   const [comments, setComments] = useState([]);
-  const [new_comment, setNewComment] = useState("");
-    const [error, setError] = useState("");
+  const [newComment, setNewComment] = useState("");
+  const [content, setContent] = useState(post.content);
+  const [modal, setModal] = useState(false);
+
   const { user } = useContext(AuthContext);
   useEffect(() => {
     axios
@@ -29,7 +37,7 @@ const Post = ({ post }) => {
   function handleAddComment(e) {
     e.preventDefault();
     const commentData = {
-      content: new_comment,
+      content: newComment,
     };
     axios
       .post(`http://localhost:5000/posts/${post._id}/comments`, commentData)
@@ -44,7 +52,7 @@ const Post = ({ post }) => {
       .put(`http://localhost:5000/posts/${post._id}/like`, { _id: user })
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
-    window.location.href = '/posts';
+    window.location.href = "/posts";
   }
 
   function dislikeHandler(e) {
@@ -53,13 +61,92 @@ const Post = ({ post }) => {
       .put(`http://localhost:5000/posts/${post._id}/dislike`, { _id: user })
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
-    window.location.href = '/posts';
+    window.location.href = "/posts";
   }
 
   const LikeButton = () => {
     if (post.likes.includes(user))
-      return <div onClick={dislikeHandler}> <i className="fas fa-heart" style={{fontSize: "20px", color: "red"}} alt="Dislike"></i> </div>;
-    else return <div onClick={likeHandler}> <i className="far fa-heart" style={{fontSize: "20px", color: "red"}} alt="Like"></i> </div>;
+      return (
+        <div onClick={dislikeHandler}>
+          {" "}
+          <i
+            className="fas fa-heart"
+            style={{ fontSize: "20px", color: "red" }}
+            alt="Dislike"
+          ></i>{" "}
+        </div>
+      );
+    else
+      return (
+        <div onClick={likeHandler}>
+          {" "}
+          <i
+            className="far fa-heart"
+            style={{ fontSize: "20px", color: "red" }}
+            alt="Like"
+          ></i>{" "}
+        </div>
+      );
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const contentData = {
+      content,
+    };
+    axios
+      .put(`http://localhost:5000/posts/${post._id}`, contentData)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+    window.location.href = "/posts";
+  };
+
+  const handleDelete = (e) => {
+    e.preventDefault();
+    axios
+      .delete(`http://localhost:5000/posts/${post._id}`)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+    window.location.href = "/posts";
+  };
+
+  const toggle = () => setModal(!modal);
+
+  const editButton = () => {
+    return (
+      <div>
+        <Button color="danger" onClick={toggle}>
+          Edit
+        </Button>
+        <Modal isOpen={modal} toggle={toggle}>
+          <ModalHeader toggle={toggle}>Content</ModalHeader>
+          <ModalBody>
+            <Form>
+              <FormGroup>
+                <Input
+                  type="textarea"
+                  name="content"
+                  id="postcontent"
+                  placeholder="Write your post here..."
+                  onChange={(e) => setContent(e.target.value)}
+                  value={content}
+                  required
+                />
+              </FormGroup>
+            </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={handleSubmit}>
+              Update Post
+            </Button>{" "}
+            <Button color="danger" onClick={handleDelete}>
+              Delete Post
+            </Button>
+          </ModalFooter>
+        </Modal>
+        <hr />
+      </div>
+    );
   };
 
   return (
@@ -68,13 +155,17 @@ const Post = ({ post }) => {
         <CardTitle>
           <Row>
             <Col md={6}>
-              <h5>
-                <strong>
-                  {post.author.firstName} {post.author.lastName}
-                </strong>
-              </h5>
+              <Link to={`/users/${post.author._id}/`}>
+                <h5>
+                  <strong>
+                    {post.author.firstName} {post.author.lastName}
+                  </strong>
+                </h5>
+              </Link>
             </Col>
-            <Col md={{ size: 3, offset: 3 }} className="text-right">{new Date(post.createdAt).toLocaleString()}</Col>
+            <Col md={{ size: 3, offset: 3 }} className="text-right">
+              {new Date(post.createdAt).toLocaleString()}
+            </Col>
           </Row>
         </CardTitle>
         <p className="text-justify">{post.content}</p>
@@ -85,13 +176,18 @@ const Post = ({ post }) => {
         <hr />
         {LikeButton()}
         <hr />
+
+        {user === post.author._id ? editButton() : ""}
+
         {comments.map((cmnt, i) => {
           return (
             <div key={i}>
-              <strong>
-                {"> "}
-                {cmnt.author.firstName} {cmnt.author.lastName}
-              </strong>
+              <Link to={`/users/${cmnt.author._id}`}>
+                <strong>
+                  {"> "}
+                  {cmnt.author.firstName} {cmnt.author.lastName}
+                </strong>
+              </Link>
               <p className="pl-2">{cmnt.content}</p>
             </div>
           );
@@ -104,7 +200,7 @@ const Post = ({ post }) => {
               name="comment"
               id="newcomment"
               placeholder="New Comment ..."
-              value={new_comment}
+              value={newComment}
               className="w-100"
               onChange={(e) => setNewComment(e.target.value)}
               required

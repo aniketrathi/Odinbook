@@ -1,8 +1,12 @@
-import React from "react";
-import {Link} from 'react-router-dom';
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import { Jumbotron, Container } from "reactstrap";
 
+import AuthContext from "../context/auth-context";
+
 const Welcome = (props) => {
+  const { loggedIn } = useContext(AuthContext);
+
   return (
     <div>
       <Jumbotron fluid>
@@ -12,7 +16,11 @@ const Welcome = (props) => {
             Odinbook is a social utility that connects you with the people
             around you.
           </p>
-          <Link to='/posts' className="text-center btn btn-dark">Jump to Posts</Link>
+          {loggedIn === true && (
+            <Link to="/posts" className="text-center btn btn-dark">
+              Jump to Posts
+            </Link>
+          )}
         </Container>
       </Jumbotron>
     </div>

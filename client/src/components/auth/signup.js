@@ -11,6 +11,7 @@ import {
 } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import React, { useContext, useState } from "react";
+
 import AuthContext from "../../context/auth-context";
 
 const Register = (props) => {

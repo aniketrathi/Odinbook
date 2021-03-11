@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
+
 import AuthContext from "../../context/auth-context";
 function Logout() {
   const { getLoggedIn } = useContext(AuthContext);

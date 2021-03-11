@@ -1,9 +1,11 @@
 import axios from "axios";
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import AuthContext from "../../context/auth-context";
 import { Button } from "reactstrap";
 import Facebook from "react-facebook-login/dist/facebook-login-render-props";
+
+import AuthContext from "../../context/auth-context";
+
 function FacebookLogin() {
   const { getLoggedIn } = useContext(AuthContext);
 
