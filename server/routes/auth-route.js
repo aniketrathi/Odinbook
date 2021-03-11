@@ -13,14 +13,8 @@ const router = express.Router();
 /// SIGNUP ROUTE ///
 router.post("/", async (req, res) => {
   try {
-    var {
-      email,
-      password,
-      confirmPassword,
-      firstName,
-      lastName,
-      photo,
-    } = req.body;
+    const { email, password, confirmPassword, firstName, lastName } = req.body;
+    var { photo } = req.body;
     if (email === "" || firstName === "" || lastName === "") {
       return res.status(400).json({ errorMessage: "Details Incomplete!" });
     }
