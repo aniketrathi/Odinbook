@@ -190,14 +190,22 @@ router.put("/users/:userid/unfriend", check, async (req, res) => {
       });
     }
 
+    const requestedUser = await User.findById(_id);
+
     user.friends = [...user.friends].filter(
       (friend) => friend.toString() !== _id
+    );
+
+    requestedUser.friends = [...requestedUser.friends].filter(
+      (friend) => friend.toString() !== userid
     );
 
     const updateResult = await User.updateOne(
       { _id: userid },
       { friends: user.friends }
     );
+
+    await User.updateOne({ _id: _id }, { friends: requestedUser.friends });
 
     return res.json(updateResult);
   } catch (err) {

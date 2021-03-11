@@ -76,22 +76,6 @@ router.post("/friendrequests", check, async (req, res) => {
       });
     }
 
-    await FriendRequest.find({sender:sender, receiver:receiver}).then((results) => {
-      if(results){
-        return res.status(400).json({
-          message: "Request had been already made!",
-        });
-      }
-    })
-
-    await FriendRequest.find({sender:receiver, receiver:sender}).then((results) => {
-      if(results){
-        return res.status(400).json({
-          message: "Request had been already made!",
-        });
-      }
-    })
-
     const newRequest = await new FriendRequest({
       sender,
       receiver,
