@@ -2,11 +2,9 @@ const bcrypt = require("bcryptjs");
 const express = require("express");
 
 const check = require("../middlewares/auth-middleware").auth;
-const User = require("../models/user");
-const Post = require("../models/post");
 const FriendRequest = require("../models/friend-request");
-const userValidatorUpdate = require("../validators/user-validator")
-  .generateValidatorUpdate;
+const Post = require("../models/post");
+const User = require("../models/user");
 
 const router = express.Router();
 
@@ -32,7 +30,7 @@ router.get("/users/:userid", check, (req, res) => {
   try {
     const { userid } = req.params;
     User.findById(userid)
-      .populate('friends')
+      .populate("friends")
       .then((user) => {
         if (!user) {
           res.status(404).json({
@@ -47,7 +45,7 @@ router.get("/users/:userid", check, (req, res) => {
   }
 });
 
-router.put("/users/:userid", check, userValidatorUpdate, async (req, res) => {
+router.put("/users/:userid", check, async (req, res) => {
   const { userid } = req.params;
   const { password } = req.body;
   try {
@@ -153,11 +151,18 @@ router.put("/users/:userid/friend", check, async (req, res) => {
       });
     }
 
+    if (userToAdd.friends.indexOf(userid) !== -1) {
+      return res.status(400).json({
+        message: "Bad request.",
+        details: ["User already has the requester ID on friend array."],
+      });
+    }
+
     userRequested.friends.push(_id);
-    // userToAdd.friends.push(userid);
+    userToAdd.friends.push(userid);
 
     const saveResult = userRequested.save();
-    // userToAdd.save();
+    userToAdd.save();
     return res.json(saveResult);
   } catch (err) {
     console.error(err);
@@ -204,8 +209,7 @@ router.put("/users/:userid/unfriend", check, async (req, res) => {
 router.get("/users/search/:pattern", check, (req, res) => {
   const { pattern } = req.params;
   try {
-    // let query = pattern.split(" ");
-    let query = pattern.split("+");
+    let query = pattern.split(" ");
 
     if (query.length === 1) {
       query = [pattern, pattern];

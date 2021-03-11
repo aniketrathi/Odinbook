@@ -1,12 +1,7 @@
 const express = require("express");
-const { validationResult } = require("express-validator");
 
 const check = require("../middlewares/auth-middleware").auth;
-const User = require("../models/user");
 const Post = require("../models/post");
-const postValidator = require("../validators/post-validator").generateValidator;
-const updatePostValidator = require("../validators/post-validator")
-  .generateValidatorUpdate;
 
 const router = express.Router();
 
@@ -90,7 +85,7 @@ router.put("/posts/:postid", check, async (req, res) => {
       if (updateResult.nModified !== 1) {
         throw new Error("Update result did not return nModified as 1");
       }
-
+      console.log(updatedData);
       return res.json({ ...updatedData, _id: postid });
     });
   } catch (err) {

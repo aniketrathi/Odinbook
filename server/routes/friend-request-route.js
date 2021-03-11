@@ -1,8 +1,8 @@
 const express = require("express");
 
 const check = require("../middlewares/auth-middleware").auth;
-const User = require("../models/user");
 const FriendRequest = require("../models/friend-request");
+const User = require("../models/user");
 
 const router = express.Router();
 

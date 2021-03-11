@@ -37,9 +37,10 @@ router.post("/", async (req, res) => {
     if (password !== confirmPassword) {
       return res.status(400).json({ errorMessage: "Passwords doesn't match!" });
     }
-    
-    if(photo === ""){
-      photo = "https://res.cloudinary.com/aniketrathi/image/upload/v1615195256/r6quzct3qv0sm9mq3pn9.jpg";
+
+    if (photo === "") {
+      photo =
+        "https://res.cloudinary.com/aniketrathi/image/upload/v1615195256/r6quzct3qv0sm9mq3pn9.jpg";
     }
 
     // Hash password //

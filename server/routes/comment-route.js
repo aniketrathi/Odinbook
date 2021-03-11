@@ -1,12 +1,8 @@
 const express = require("express");
-const { validationResult } = require("express-validator");
 
 const check = require("../middlewares/auth-middleware").auth;
-const User = require("../models/user");
-const Post = require("../models/post");
 const Comment = require("../models/comment");
-const commentValidator = require("../validators/comment-validator")
-  .generateValidator;
+const Post = require("../models/post");
 
 const router = express.Router();
 
@@ -63,39 +59,25 @@ router.post("/posts/:postid/comments", check, async (req, res) => {
   }
 });
 
-router.put(
-  "/posts/:postid/comments/:commentid",
-  check,
-  commentValidator,
-  async (req, res) => {
-    const { commentid } = req.params;
-    try {
-      const errors = await validationResult(req);
+router.put("/posts/:postid/comments/:commentid", check, async (req, res) => {
+  const { commentid } = req.params;
+  try {
+    const updatedData = { ...req.body };
 
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          message: "Bad request.",
-          details: errors.array(),
-        });
-      }
-
-      const updatedData = { ...req.body };
-
-      await Comment.updateOne({ _id: commentid }, updatedData).then(
-        (updateResult) => {
-          if (updateResult.nModified !== 1) {
-            throw new Error("Update result did not return nModified as 1");
-          }
-
-          return res.json({ ...updatedData, _id: commentid });
+    await Comment.updateOne({ _id: commentid }, updatedData).then(
+      (updateResult) => {
+        if (updateResult.nModified !== 1) {
+          throw new Error("Update result did not return nModified as 1");
         }
-      );
-    } catch (err) {
-      console.error(err);
-      res.status(500).send();
-    }
+
+        return res.json({ ...updatedData, _id: commentid });
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
   }
-);
+});
 
 router.delete("/posts/:postid/comments/:commentid", check, async (req, res) => {
   const { commentid } = req.params;
