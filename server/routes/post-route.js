@@ -5,7 +5,7 @@ const Post = require("../models/post");
 
 const router = express.Router();
 
-router.get("/posts", check, (req, res) => {
+router.get("/", check, (req, res) => {
   try {
     Post.find()
       .lean()
@@ -26,7 +26,7 @@ router.get("/posts", check, (req, res) => {
   }
 });
 
-router.get("/posts/:postid", check, (req, res) => {
+router.get("/:postid", check, (req, res) => {
   const { postid } = req.params;
   try {
     Post.findById(postid)
@@ -47,7 +47,7 @@ router.get("/posts/:postid", check, (req, res) => {
   }
 });
 
-router.post("/posts", check, async (req, res) => {
+router.post("/", check, async (req, res) => {
   const { content } = req.body;
   try {
     if (content === "") {
@@ -70,7 +70,7 @@ router.post("/posts", check, async (req, res) => {
   }
 });
 
-router.put("/posts/:postid", check, async (req, res) => {
+router.put("/:postid", check, async (req, res) => {
   const { postid } = req.params;
   const { content } = req.body;
   try {
@@ -94,7 +94,7 @@ router.put("/posts/:postid", check, async (req, res) => {
   }
 });
 
-router.delete("/posts/:postid", check, async (req, res) => {
+router.delete("/:postid", check, async (req, res) => {
   const { postid } = req.params;
   try {
     const deleteResult = await Post.deleteOne({ _id: postid });
@@ -108,7 +108,7 @@ router.delete("/posts/:postid", check, async (req, res) => {
   }
 });
 
-router.put("/posts/:postid/like", check, (req, res) => {
+router.put("/:postid/like", check, (req, res) => {
   const { postid } = req.params;
   const { _id } = req.body;
   try {
@@ -152,7 +152,7 @@ router.put("/posts/:postid/like", check, (req, res) => {
   }
 });
 
-router.put("/posts/:postid/dislike", check, (req, res) => {
+router.put("/:postid/dislike", check, (req, res) => {
   const { postid } = req.params;
   const { _id } = req.body;
   try {

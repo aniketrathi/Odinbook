@@ -42,7 +42,7 @@ app.use(passport.initialize());
 app.use(fileUpload());
 
 app.use("/auth", authRouter);
-app.use("/", userRouter);
-app.use("/", friendRequestRouter);
-app.use("/", postRouter);
-app.use("/", commentRouter);
+app.use("/users", userRouter);
+app.use("/friendrequests", friendRequestRouter);
+app.use("/posts", postRouter);
+app.use("/posts", commentRouter);

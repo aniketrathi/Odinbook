@@ -8,9 +8,9 @@ const User = require("../models/user");
 
 const router = express.Router();
 
-router.get("/users", check, (req, res) => {
+router.get("/", check, async (req, res) => {
   try {
-    User.find()
+    await User.find()
       .lean()
       .populate("friends")
       .then((users) => {
@@ -26,10 +26,10 @@ router.get("/users", check, (req, res) => {
   }
 });
 
-router.get("/users/:userid", check, (req, res) => {
+router.get("/:userid", check, async (req, res) => {
   try {
     const { userid } = req.params;
-    User.findById(userid)
+    await User.findById(userid)
       .populate("friends")
       .then((user) => {
         if (!user) {
@@ -45,7 +45,7 @@ router.get("/users/:userid", check, (req, res) => {
   }
 });
 
-router.put("/users/:userid", check, async (req, res) => {
+router.put("/:userid", check, async (req, res) => {
   const { userid } = req.params;
   const { password } = req.body;
   try {
@@ -79,7 +79,7 @@ router.put("/users/:userid", check, async (req, res) => {
   }
 });
 
-router.get("/users/:userid/posts", check, async (req, res) => {
+router.get("/:userid/posts", check, (req, res) => {
   const { userid } = req.params;
   try {
     Post.find({ author: userid })
@@ -100,7 +100,7 @@ router.get("/users/:userid/posts", check, async (req, res) => {
 });
 
 // To show all requests //
-router.get("/users/:userid/friendrequests", check, async (req, res) => {
+router.get("/:userid/friendrequests", check, async (req, res) => {
   const { userid } = req.params;
   try {
     FriendRequest.find({ receiver: userid })
@@ -122,7 +122,7 @@ router.get("/users/:userid/friendrequests", check, async (req, res) => {
 });
 
 // To accept the friend request //
-router.put("/users/:userid/friend", check, async (req, res) => {
+router.put("/:userid/friend", check, async (req, res) => {
   const { _id } = req.body;
   const { userid } = req.params;
   try {
@@ -170,7 +170,7 @@ router.put("/users/:userid/friend", check, async (req, res) => {
   }
 });
 
-router.put("/users/:userid/unfriend", check, async (req, res) => {
+router.put("/:userid/unfriend", check, async (req, res) => {
   const { _id } = req.body;
   const { userid } = req.params;
   try {
@@ -214,7 +214,7 @@ router.put("/users/:userid/unfriend", check, async (req, res) => {
   }
 });
 
-router.get("/users/search/:pattern", check, (req, res) => {
+router.get("/search/:pattern", check, (req, res) => {
   const { pattern } = req.params;
   try {
     let query = pattern.split(" ");

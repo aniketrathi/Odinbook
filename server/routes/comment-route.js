@@ -6,7 +6,7 @@ const Post = require("../models/post");
 
 const router = express.Router();
 
-router.get("/posts/:postid/comments", check, (req, res) => {
+router.get("/:postid/comments", check, (req, res) => {
   const { postid } = req.params;
   try {
     Comment.find({ post: postid })
@@ -26,7 +26,7 @@ router.get("/posts/:postid/comments", check, (req, res) => {
   }
 });
 
-router.post("/posts/:postid/comments", check, async (req, res) => {
+router.post("/:postid/comments", check, async (req, res) => {
   const { postid } = req.params;
   const { content } = req.body;
   try {
@@ -59,7 +59,7 @@ router.post("/posts/:postid/comments", check, async (req, res) => {
   }
 });
 
-router.put("/posts/:postid/comments/:commentid", check, async (req, res) => {
+router.put("/:postid/comments/:commentid", check, async (req, res) => {
   const { commentid } = req.params;
   try {
     const updatedData = { ...req.body };
@@ -79,7 +79,7 @@ router.put("/posts/:postid/comments/:commentid", check, async (req, res) => {
   }
 });
 
-router.delete("/posts/:postid/comments/:commentid", check, async (req, res) => {
+router.delete("/:postid/comments/:commentid", check, async (req, res) => {
   const { commentid } = req.params;
   try {
     const deleteResult = await Comment.deleteOne({ _id: commentid });

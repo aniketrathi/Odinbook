@@ -6,7 +6,7 @@ const User = require("../models/user");
 
 const router = express.Router();
 
-router.get("/friendrequests", check, (req, res) => {
+router.get("/", check, (req, res) => {
   try {
     FriendRequest.find()
       .lean()
@@ -27,7 +27,7 @@ router.get("/friendrequests", check, (req, res) => {
   }
 });
 
-router.get("/friendrequests/:requestid", check, (req, res) => {
+router.get("/:requestid", check, (req, res) => {
   const { requestid } = req.params;
   try {
     FriendRequest.findById(requestid)
@@ -49,7 +49,7 @@ router.get("/friendrequests/:requestid", check, (req, res) => {
   }
 });
 
-router.post("/friendrequests", check, async (req, res) => {
+router.post("/", check, async (req, res) => {
   const { sender, receiver } = req.body;
   try {
     if (!sender || !receiver) {
@@ -89,7 +89,7 @@ router.post("/friendrequests", check, async (req, res) => {
   }
 });
 
-router.delete("/friendrequests/:requestid", check, (req, res) => {
+router.delete("/:requestid", check, (req, res) => {
   const { requestid } = req.params;
   try {
     FriendRequest.deleteOne({ _id: requestid }).then((result) => {

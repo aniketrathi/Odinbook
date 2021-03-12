@@ -14,7 +14,7 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
     const { email, password, confirmPassword, firstName, lastName } = req.body;
-    var { photo } = req.body;
+    let { photo } = req.body;
     if (email === "" || firstName === "" || lastName === "") {
       return res.status(400).json({ errorMessage: "Details Incomplete!" });
     }
@@ -58,7 +58,7 @@ router.post("/", async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: 86400,
+        expiresIn: process.env.EXPIRED_TIME,
       }
     );
 
@@ -98,7 +98,7 @@ router.post("/login", async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: 86400,
+        expiresIn: process.env.EXPIRED_TIME,
       }
     );
 
@@ -125,7 +125,7 @@ router.post(
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: 86400,
+          expiresIn: process.env.EXPIRED_TIME,
         }
       );
       res
