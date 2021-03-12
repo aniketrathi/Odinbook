@@ -30,8 +30,7 @@ const Post = ({ post }) => {
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/posts/${post._id}/comments`)
-      .then((res) => setComments(res.data))
-      .catch((err) => console.log(err));
+      .then((res) => setComments(res.data));
   }, []);
 
   function handleAddComment(e) {
@@ -39,28 +38,26 @@ const Post = ({ post }) => {
     const commentData = {
       content: newComment,
     };
-    axios
-      .post(`http://localhost:5000/posts/${post._id}/comments`, commentData)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    axios.post(
+      `${process.env.REACT_APP_API_URL}/posts/${post._id}/comments`,
+      commentData
+    );
     window.location.href = "/posts";
   }
 
   function likeHandler(e) {
     e.preventDefault();
-    axios
-      .put(`http://localhost:5000/posts/${post._id}/like`, { _id: user })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    axios.put(`${process.env.REACT_APP_API_URL}/posts/${post._id}/like`, {
+      _id: user,
+    });
     window.location.href = "/posts";
   }
 
   function dislikeHandler(e) {
     e.preventDefault();
-    axios
-      .put(`http://localhost:5000/posts/${post._id}/dislike`, { _id: user })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    axios.put(`${process.env.REACT_APP_API_URL}/posts/${post._id}/dislike`, {
+      _id: user,
+    });
     window.location.href = "/posts";
   }
 
@@ -94,19 +91,16 @@ const Post = ({ post }) => {
     const contentData = {
       content,
     };
-    axios
-      .put(`http://localhost:5000/posts/${post._id}`, contentData)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    axios.put(
+      `${process.env.REACT_APP_API_URL}/posts/${post._id}`,
+      contentData
+    );
     window.location.href = "/posts";
   };
 
   const handleDelete = (e) => {
     e.preventDefault();
-    axios
-      .delete(`http://localhost:5000/posts/${post._id}`)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    axios.delete(`${process.env.REACT_APP_API_URL}/posts/${post._id}`);
     window.location.href = "/posts";
   };
 

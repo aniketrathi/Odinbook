@@ -17,10 +17,11 @@ const Profile = () => {
   async function getUser() {
     try {
       setLoading(true);
-      const userRes = await axios.get(`${process.env.REACT_APP_API_URL}/users/${userid}`);
+      const userRes = await axios.get(
+        `${process.env.REACT_APP_API_URL}/users/${userid}`
+      );
       setCurrentUser(userRes.data);
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -60,11 +61,7 @@ const Profile = () => {
         <ProfileDetail currentUser={currentUser} /> <br /> <hr />
         <Row>
           <FriendList friends={currentUser.friends} />
-          {error !== "" ? (
-            handleError(error)
-          ) : (
-            <PostList posts={userPosts} />
-          )}
+          {error !== "" ? handleError(error) : <PostList posts={userPosts} />}
         </Row>
       </Container>
     );

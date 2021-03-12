@@ -15,14 +15,12 @@ function FacebookLogin() {
     await axios.post(`${process.env.REACT_APP_API_URL}/auth/facebook`, {
       access_token: data,
     });
-    console.log(data);
     await getLoggedIn();
     history.push("/");
   }
 
   async function responseFacebook(res) {
     await fbLogin(res.accessToken);
-    console.log(res);
   }
 
   return (

@@ -11,7 +11,9 @@ function ProfileDetail({ currentUser }) {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_URL}/users/${currentUser._id}/friendrequests/`)
+      .get(
+        `${process.env.REACT_APP_API_URL}/users/${currentUser._id}/friendrequests/`
+      )
       .then((response) => {
         const requestFromUser = response.data.find(
           (request) => request.sender._id === user
@@ -58,12 +60,13 @@ function ProfileDetail({ currentUser }) {
   async function handleRemoveFriend(e, id) {
     e.preventDefault();
     try {
-      await axios.put(`${process.env.REACT_APP_API_URL}/users/${user}/unfriend`, {
-        _id: id,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/users/${user}/unfriend`,
+        {
+          _id: id,
+        }
+      );
+    } catch (err) {}
     window.location.reload();
   }
 
@@ -74,10 +77,11 @@ function ProfileDetail({ currentUser }) {
         sender: user,
         receiver: id,
       };
-      await axios.post(`${process.env.REACT_APP_API_URL}/friendrequests`, reqdata);
-    } catch (err) {
-      console.log(err);
-    }
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/friendrequests`,
+        reqdata
+      );
+    } catch (err) {}
     window.location.reload();
   }
 
@@ -88,7 +92,9 @@ function ProfileDetail({ currentUser }) {
 
   async function deleteRequest(e, requestId) {
     e.preventDefault();
-    await axios.delete(`${process.env.REACT_APP_API_URL}/friendrequests/${requestId}`);
+    await axios.delete(
+      `${process.env.REACT_APP_API_URL}/friendrequests/${requestId}`
+    );
     window.location.reload();
   }
 
@@ -97,7 +103,6 @@ function ProfileDetail({ currentUser }) {
       if (user.toString() === currentUser._id.toString()) {
         return <></>;
       }
-      console.log();
       if (
         currentUser.friends.filter(
           ({ _id }) => _id.toString() === user.toString()

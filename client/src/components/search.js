@@ -14,7 +14,6 @@ const SearchResults = (props) => {
       .get(`${process.env.REACT_APP_API_URL}/users/search/${query}`)
       .then((response) => {
         setResults(response.data);
-        console.log(results);
       })
       .catch((error) => {
         setError(error.response.data.message);
